@@ -1,0 +1,76 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #fff; /* White background */
+            color: #000; /* Black text */
+            margin: 0;
+            padding: 0;
+        }
+        h1 {
+            color: #000; /* Black heading */
+        }
+        form {
+            background-color: #000; /* Black background for form */
+            color: #fff; /* White text */
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            max-width: 300px; /* Adjust the maximum width of the form */
+            margin: 0 auto; /* Center the form horizontally */
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            color: #fff; /* White text for labels */
+        }
+        input[type="email"],
+        input[type="password"],
+        button {
+            width: calc(100% - 20px); /* Adjust the width of input and button to accommodate padding */
+            padding: 10px;
+            margin-bottom: 10px;
+            border: none;
+            border-radius: 3px;
+            box-sizing: border-box;
+        }
+        button {
+            background-color: #000; /* Black background for button */
+            color: #fff; /* White text for button */
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #ccc; /* Light gray background on hover */
+        }
+        .error {
+            color: red; /* Red text for error messages */
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Login</h1>
+    <% if (errorMessage && errorMessage.length > 0) { %>
+        <% errorMessage.forEach(message => { %>
+            <p class="error"><%= message %></p>
+        <% }); %>
+    <% } %>
+    <form action="/user/login" method="post">
+        <div>
+            <label for="email">Email:</label>
+            <input type="email" id="email" name="email" required>
+        </div>
+        <div>
+            <label for="password">Password:</label>
+            <input type="password" id="password" name="password" required>
+        </div>
+        <button type="submit">Login</button>
+    </form>
+</body>
+</html>
