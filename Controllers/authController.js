@@ -176,7 +176,10 @@ exports.adminDashboard=(async (req,res)=>{
     if(req.session.isAdAuth){
         console.log("Inside adminDashboard POST 1");
         const name=req.body.search;
-        const data= await User.find({name:{$regex: new RegExp(name, "i")}});
+        console.log(name);
+        const data= await User.find({username:{$regex: new RegExp(name, "i")}});     
+    //    const data= await User.find({ username: { $regex: /username/i } });
+        console.log(data);
         if (data.length===0){
             req.flash('userDeleted', "No users found for the search");
         } else{
