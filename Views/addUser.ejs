@@ -13,10 +13,30 @@
         <div class="row">
             <div class="col-md-6 offset-md-3">
                 <h1>Add User</h1>
-                <form action="/admin/addUserSubmit" method="POST">
+                <% if (typeof userSuccess !== 'undefined') { %>
+                    <div class="alert alert-success" role="alert">
+                        <%= userSuccess %>
+                    </div>
+                <% } %>
+                <% if (typeof userExist !== 'undefined') { %>
+                    <div class="alert alert-danger" role="alert">
+                        <%= userExist %>
+                    </div>
+                <% } %>
+                <% if (typeof passwordError !== 'undefined') { %>
+                    <div class="alert alert-danger" role="alert">
+                        <%= passwordError %>
+                    </div>
+                <% } %>
+                <% if (typeof emailError !== 'undefined') { %>
+                    <div class="alert alert-danger" role="alert">
+                        <%= emailError %>
+                    </div>
+                <% } %>
+                <form action="/admin/addUser" method="POST">
                     <div class="mb-3">
                         <label for="username" class="form-label">Username</label>
-                        <input type="text" class="form-control" id="username" name="username" required>
+                        <input type="text" class="form-control" id="username" name="name" required>
                     </div>
                     <div class="mb-3">
                         <label for="email" class="form-label">Email address</label>
@@ -25,6 +45,10 @@
                     <div class="mb-3">
                         <label for="password" class="form-label">Password</label>
                         <input type="password" class="form-control" id="password" name="password" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="confirmPassword" class="form-label">Confirm Password</label>
+                        <input type="password" class="form-control" id="confirmPassword" name="confirmPassword" required>
                     </div>
                     <button type="submit" class="btn btn-primary">Add User</button>
                 </form>

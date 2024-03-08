@@ -26,7 +26,7 @@ app.use(flash());
 
 app.use("/user",userRoutes);
 app.use("/admin",adminRoutes);
-
+//skip
 
 
 

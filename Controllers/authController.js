@@ -181,9 +181,13 @@ exports.adminDashboard=(async (req,res)=>{
     //    const data= await User.find({ username: { $regex: /username/i } });
         console.log(data);
         if (data.length===0){
+            console.log("inside no user flash 1")
             req.flash('userDeleted', "No users found for the search");
+            console.log("inside no user flash 2")
         } else{
+            console.log("inside user success flash 1")
             req.flash('userSuccess', "Search results retrieved successfuly")
+            console.log("inside user success flash 2")
         }
         console.log("Inside adminDashboard POST 2");
         res.render("adminDashboard",{
@@ -196,16 +200,138 @@ exports.adminDashboard=(async (req,res)=>{
     }
 });
 
-exports.addUser=((req,res)=>{
+exports.addUserRender=((req,res)=>{
+    if(req.session.isAdAuth){
+        res.render("addUser");
+    }else{
+        req.redirect("adminLogin")
+    }
+})
+
+exports.addUser=(async (req,res)=>{
+    try{
+        const {name, email, password, confirmPassword}= req.body;
+        const user=await User.findOne({email});
+        if(!user){
+            if(password!==confirmPassword){
+                req.flash('passwordError',"Password doesn't match");
+                return res.redirect("addUserRender");
+            }
+            const hashedPassword= await bcrypt.hash(password,10);
+            const data={
+                username:name,
+                email:email,
+                password:hashedPassword
+            }
+            await User.insertMany([data]);
+            req.flash('userSuccess',"User added successfully");
+            res.redirect("adminDashboard");
+        }else{
+            req.flash('userExist',"Existing User");
+            res.redirect("adminDashboard");
+        }
+    }catch{
+        console.error("Some internal error", error);
+        req.flash('emailError',"Error while submitting");
+        res.redirect("addUser");
+
+    }
 
 })
+
+
 
 exports.logoutAdmin=((req,res)=>{
     console.log("Inside logoutAdmin");
     req.session.idAdAuth=false;
-    return res.redirect("adminLogin");
-    
+    return res.redirect("adminLogin"); 
 })
+
+
+exports.updateUserRender=(async (req,res)=>{
+    if(req.session.isAdAuth){
+    try{
+        
+        console.log("Inside updateUserRender try");
+        let username=req.params.username;
+        console.log(username);
+        const user= await User.findOne({username});
+        if(user){
+            console.log("Inside if user is fetched");
+           return res.render("updateUser",{user})
+        }else{
+            return res.redirect("/admin/adminDashboard")
+        }
+   
+    }catch(error){
+        console.error("Error in fetching user",error);
+        return res.status(500).send("Internal Server Error");
+
+    } 
+    }else{
+        return res.redirect("/admin/adminDashboard")
+    }
+})
+
+exports.updateUser=(async(req,res)=>{
+  if(req.session.isAdAuth){
+    try{
+        console.log("inside update user submit");
+        const id=req.params.id;
+        console.log(id);
+        const {name,email,isAdmin}=req.body;
+        const updatedUser= await User.findOneAndUpdate(
+            {_id:id},
+            {$set:{
+                username:name,
+                email:email,
+                isAdmin:isAdmin==='true'
+            },},
+            {new:true}
+        );
+        console.log(updatedUser);
+        if(updatedUser){
+            console.log("inside updated user");
+            req.flash('userSuccess',"User updated successfully");
+            if(req.session.isAdAuth){
+            res.redirect("/admin/adminDashboard")
+            }
+        }else{
+            res.redirect("/admin/adminDashboard")
+        }
+
+    }catch(error){
+        console.error('Error during update',error);
+        res.redirect("/admin/adminDashboard")
+    }
+  }else{
+    res.redirect("/admin/adminLogin")
+  }
+
+})
+
+exports.deleteUser=(async(req,res)=>{
+    try{
+        console.log("inside try block of delete user");
+        if(req.session.isAdAuth){
+            console.log("inside if block of delete user");
+        let id=req.params.id;
+        console.log(id);
+        const deletedUser= await User.findOneAndDelete({_id:id})
+        console.log("deleted user logged", deletedUser);
+        if(deletedUser){
+            console.log("inside deleted user");
+            req.flash('userDeleted',"User Successfully deleted");
+            res.redirect("/admin/adminDashboard")
+        }
+        }else{
+            res.redirect("/admin/adminDashboard")
+        }
+    }catch(error){
+        console.error("Error deleting the user",error);
+    }
+})
+
 // module.exports={
 //     registerUser,
 //     getRegisterPage,
