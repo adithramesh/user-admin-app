@@ -7,9 +7,9 @@ const userRoutes= require("./Routes/userRoutes");
 const adminRoutes=require("./Routes/adminRoutes");
 
 const app= express(); 
-app.use(session({
+app.use(session({ 
     secret: "secret",
-    resave: true,
+    resave: false,
     saveUninitialized: true
   }));
 
